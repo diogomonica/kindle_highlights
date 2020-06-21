@@ -14,6 +14,16 @@ import os
 
 from google.cloud import secretmanager
 
+# Access the database secret and django secret in google secrets manager.
+client = secretmanager.SecretManagerServiceClient()
+name = client.secret_version_path("329268971458", "kindlehighlights-database-password", 1)
+response = client.access_secret_version(name)
+database_password = response.payload.data.decode('UTF-8')
+
+name = client.secret_version_path("329268971458", "django-secret-key", 1)
+response = client.access_secret_version(name)
+django_secret_key = response.payload.data.decode('UTF-8')
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -22,12 +32,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '^qfofdhkkdqdv5l)b66*v=fh6in#**fxk64)6zefzo(r8o8a!v'
+SECRET_KEY = django_secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["fine-rite-272116.uc.r.appspot.com"]
+ALLOWED_HOSTS = ["fine-rite-272116.uc.r.appspot.com", "*"]
 
 
 # Application definition
@@ -81,13 +91,6 @@ WSGI_APPLICATION = 'kindle_highlights.wsgi.application'
 import pymysql  # noqa: 402
 pymysql.version_info = (1, 4, 6, 'final', 0)  # change mysqlclient version
 pymysql.install_as_MySQLdb()
-
-
-# Access the database secret in google secrets manager.
-client = secretmanager.SecretManagerServiceClient()
-name = client.secret_version_path("329268971458", "kindlehighlights-database-password", 1)
-response = client.access_secret_version(name)
-database_password = response.payload.data.decode('UTF-8')
 
 # [START db_setup]
 if os.getenv('GAE_APPLICATION', None):
