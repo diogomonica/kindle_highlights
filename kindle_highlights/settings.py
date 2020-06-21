@@ -27,7 +27,7 @@ SECRET_KEY = '^qfofdhkkdqdv5l)b66*v=fh6in#**fxk64)6zefzo(r8o8a!v'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["fine-rite-272116.uc.r.appspot.com"]
 
 
 # Application definition
