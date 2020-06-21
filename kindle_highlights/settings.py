@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+from google.cloud import secretmanager
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -80,6 +82,13 @@ import pymysql  # noqa: 402
 pymysql.version_info = (1, 4, 6, 'final', 0)  # change mysqlclient version
 pymysql.install_as_MySQLdb()
 
+
+# Access the database secret in google secrets manager.
+client = secretmanager.SecretManagerServiceClient()
+name = client.secret_version_path("329268971458", "kindlehighlights-database-password", 1)
+response = client.access_secret_version(name)
+database_password = response.payload.data.decode('UTF-8')
+
 # [START db_setup]
 if os.getenv('GAE_APPLICATION', None):
     # Running on production App Engine, so connect to Google Cloud SQL using
@@ -89,7 +98,7 @@ if os.getenv('GAE_APPLICATION', None):
             'ENGINE': 'django.db.backends.mysql',
             'HOST': '/cloudsql/fine-rite-272116:us-central1:kindlehighlights',
             'USER': 'kindlehighlights-user',
-            'PASSWORD': get_env_variable('DB_PASSWORD'),
+            'PASSWORD': database_password,
             'NAME': 'kindlehighlights',
         }
     }
@@ -111,7 +120,7 @@ else:
             'PORT': '3306',
             'NAME': 'kindlehighlights',
             'USER': 'kindlehighlights-user',
-            'PASSWORD': get_env_variable('DB_PASSWORD'),
+            'PASSWORD': database_password,
         }
     }
 # [END db_setup]
