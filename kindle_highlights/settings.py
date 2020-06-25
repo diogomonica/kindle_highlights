@@ -115,7 +115,7 @@ if os.getenv('GAE_APPLICATION', None):
             'NAME': 'kindlehighlights',
         }
     }
-else:
+elif os.getenv('PRODMIGRATE', None):
     # Running locally so connect to either a local MySQL instance or connect to
     # Cloud SQL via the proxy. To start the proxy via command line:
     #
@@ -123,10 +123,6 @@ else:
     #
     # See https://cloud.google.com/sql/docs/mysql-connect-proxy
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        },
         'prod': {
             'ENGINE': 'django.db.backends.mysql',
             'HOST': '127.0.0.1',
@@ -134,6 +130,13 @@ else:
             'NAME': 'kindlehighlights',
             'USER': 'kindlehighlights-user',
             'PASSWORD': database_password,
+        }
+    }
+else:
+    DATABASES = {
+            'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
 # [END db_setup]
