@@ -1,3 +1,5 @@
 Django==3.0.7
 PyMySQL==0.9.3
 google-cloud-secret-manager
+django-inbound-email
+google-python-cloud-debugger
