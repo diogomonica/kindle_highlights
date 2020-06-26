@@ -62,7 +62,7 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'INFO',
+        'level': 'DEBUG' if DEBUG else 'INFO',
         'formatter': 'color',
     },
     'loggers': {

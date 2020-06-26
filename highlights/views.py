@@ -4,6 +4,28 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.dispatch import receiver
 from inbound_email.signals import email_received, email_received_unacceptable
+from django.core.mail import EmailMessage, EmailMultiAlternatives
+
+def to_dict(email_message):
+    """
+    Converts the specified email message to a dictionary representation.
+    """
+    if type(email_message) not in [EmailMessage, EmailMultiAlternatives]:
+        return email_message
+    email_message_data = {
+        'subject': email_message.subject,
+        'body': email_message.body,
+        'from_email': email_message.from_email,
+        'to': email_message.to,
+        'bcc': email_message.bcc,
+        'attachments': email_message.attachments,
+        'headers': email_message.extra_headers,
+        'cc': email_message.cc,
+        'reply_to': None,
+    }
+    if isinstance(email_message, EmailMultiAlternatives):
+        email_message_data['alternatives'] = email_message.alternatives
+    return email_message_data 
 
 @receiver(email_received, dispatch_uid="something_unique")
 def on_email_received(sender, **kwargs):
@@ -17,6 +39,7 @@ def on_email_received(sender, **kwargs):
         email.from_email,
         email.subject
     )
+    logging.debug(to_dict(email))
 
 @receiver(email_received_unacceptable, dispatch_uid="something_unique_1")
 def on_invalid_email_received(sender, **kwargs):
