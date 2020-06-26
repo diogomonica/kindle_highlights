@@ -35,7 +35,44 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = django_secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
+from colorlog import ColoredFormatter
+
 DEBUG = True
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'color': {
+            '()': 'colorlog.ColoredFormatter',
+            'format': '%(log_color)s%(levelname)-8s %(message)s',
+            'log_colors': {
+                'DEBUG':    'white',
+                'INFO':     'white',
+                'WARNING':  'yellow',
+                'ERROR':    'red',
+                'CRITICAL': 'bold_red',
+            },
+        }
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'color',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+        'formatter': 'color',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+    },
+}
 
 ALLOWED_HOSTS = ["fine-rite-272116.uc.r.appspot.com", "*"]
 
@@ -190,3 +227,4 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 INBOUND_EMAIL_LOG_REQUESTS = True
+
