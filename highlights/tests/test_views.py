@@ -3,7 +3,7 @@ import unittest
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.core.mail import EmailMultiAlternatives
-from .test_files.mailgun_post import test_inbound_payload as mailgun_payload
+from .test_files.mailgun_post import spirit_animals_payload as mailgun_payload
 
 # from unittest import mockfrom contextlib import contextmanager
 
