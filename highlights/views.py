@@ -34,7 +34,17 @@ def on_email_received(sender, **kwargs):
     email = kwargs.pop('email')
     request = kwargs.pop('request')
 
-    Email.objects.create(sender_email=email.from_email, subject=email.subject, body=email.body)
+    new_email = Email(sender_email=email.from_email, subject=email.subject, body=email.body)
+    for attach in email.attachments:
+        # we must convert attachment tuple into a file
+        # before adding as the property.
+        name, content, content_type = attach
+        logging.info("Found attachment. Name: %s, Content-type:%s. Content: %s" % (name, content_type, content))
+        if content_type == "text/html":
+            logging.info("Added Attachment  %s" % name)
+            new_email.attachment = content
+
+    new_email.save()
     # your code goes here - save the email, respond to it, etc.
     logging.info(
         "New email received from %s: %s",
