@@ -160,7 +160,7 @@ elif os.getenv('PRODMIGRATE', None):
     #
     # See https://cloud.google.com/sql/docs/mysql-connect-proxy
     DATABASES = {
-        'prod': {
+        'default': {
             'ENGINE': 'django.db.backends.mysql',
             'HOST': '127.0.0.1',
             'PORT': '3306',

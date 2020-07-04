@@ -4,6 +4,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.core.mail import EmailMultiAlternatives
 from .test_files.mailgun_post import spirit_animals_payload as mailgun_payload
+from highlights.models import Email
 
 # from unittest import mockfrom contextlib import contextmanager
 
@@ -15,7 +16,7 @@ from .test_files.mailgun_post import spirit_animals_payload as mailgun_payload
 #     yield handler
 #     signal.disconnect(handler)
 
-class IndexTest(unittest.TestCase):
+class IndexTest(TestCase):
     def setUp(self):
         # Every test needs a client.
         self.client = Client()
@@ -30,7 +31,7 @@ class IndexTest(unittest.TestCase):
         # Check that the rendered context contains 5 customers.
         self.assertEqual(response.content ,b'INDEX VIEW')
 
-class EmailTest(unittest.TestCase):
+class EmailTest(TestCase):
     def setUp(self):
         # Every test needs a client.
         self.client = Client()
@@ -66,5 +67,19 @@ class EmailTest(unittest.TestCase):
         # Check that the response is 200 OK.
         self.assertEqual(response.status_code, 200)
 
-        # Check that the rendered context contains 5 customers.
-        # self._assertEmailParsedCorrectly(email, mailgun_payload)
+    def test_email_gets_created(self):
+        response = self.client.post(reverse('receive_inbound_email'), mailgun_payload)
+
+        # Check that the response is 200 OK.
+        self.assertEqual(response.status_code, 200)
+
+        # Check to see if an email was indeed created
+        emails = Email.objects.all()
+
+        self.assertEqual(emails.count(), 1)
+        self.assertEqual(emails.first().subject, mailgun_payload.get('subject'))
+        self.assertEqual(emails.first().body, "%s\n\n%s" % (
+            mailgun_payload.get('stripped-text', ''),
+            mailgun_payload.get('stripped-signature', '')
+        ))
+        self.assertEqual(emails.first().sender_email, mailgun_payload.get('sender'))

@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.dispatch import receiver
 from inbound_email.signals import email_received, email_received_unacceptable
 from django.core.mail import EmailMessage, EmailMultiAlternatives
+from .models import Email
 
 def to_dict(email_message):
     """
@@ -33,6 +34,7 @@ def on_email_received(sender, **kwargs):
     email = kwargs.pop('email')
     request = kwargs.pop('request')
 
+    Email.objects.create(sender_email=email.from_email, subject=email.subject, body=email.body)
     # your code goes here - save the email, respond to it, etc.
     logging.info(
         "New email received from %s: %s",
