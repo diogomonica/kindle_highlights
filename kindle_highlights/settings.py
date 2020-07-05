@@ -81,7 +81,7 @@ ALLOWED_HOSTS = ["fine-rite-272116.uc.r.appspot.com", "*"]
 INBOUND_EMAIL_PARSER = 'inbound_email.backends.mailgun.MailgunRequestParser'
 
 # if True (default=False) then log the contents of each inbound request
-INBOUND_EMAIL_LOG_REQUESTS = True
+INBOUND_EMAIL_LOG_REQUESTS = False
 
 # if True (default=True) then always return HTTP status of 200 (may be required by provider)
 INBOUND_EMAIL_RESPONSE_200 = True
@@ -225,6 +225,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-
-INBOUND_EMAIL_LOG_REQUESTS = True
 

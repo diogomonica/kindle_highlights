@@ -4,3 +4,4 @@ google-cloud-secret-manager
 django-inbound-email
 google-python-cloud-debugger
 colorlog
+BeautifulSoup4

@@ -21,6 +21,7 @@ class Migration(migrations.Migration):
                 ('received_at', models.DateTimeField(auto_now=True)),
                 ('sender_email', models.EmailField(default='EMPTY_EMAIL', max_length=254)),
                 ('attachment', models.TextField(default='')),
+                ('parsed', models.BooleanField(default=False)),
             ],
             options={
                 'verbose_name_plural': 'emails',
