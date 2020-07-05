@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Email(models.Model):
     sender = models.CharField(max_length=255)
@@ -11,6 +12,7 @@ class Email(models.Model):
 
     class Meta:
         verbose_name_plural = 'emails'
+        ordering = ['received_at']
 
     def __str__(self):
         return u"%s - %s" % (self.sender_email, self.subject)
@@ -28,6 +30,35 @@ class Volume(models.Model):
 
     class Meta:
         verbose_name_plural = 'volumes'
+        ordering = ['created_at']
 
     def __str__(self):
         return u"%s - %s" % (self.google_id, self.title + " - " + self.subtitle)
+
+class Entry(models.Model):
+    volume = models.ForeignKey(to=Volume, on_delete=models.CASCADE)
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = 'entries'
+        ordering = ['created_at']
+
+    def __str__(self):
+        return u"%s : %s" % (self.created_at, self.volume.title)
+
+class Highlight(models.Model):
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    volume = models.ForeignKey(to=Volume, on_delete=models.CASCADE)
+    entry = models.ForeignKey(to=Entry, on_delete=models.CASCADE)
+    color = models.CharField(max_length=30)
+    location = models.IntegerField()
+    highlight_type = models.CharField(max_length=20)
+    content = models.TextField()
+
+    class Meta:
+        ordering = ['location']
+        verbose_name_plural = 'highlights'
+
+    def __str__(self):
+        return u"%s - %s" % (self.location, self.title + " - " + self.subtitle)

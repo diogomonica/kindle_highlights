@@ -9,7 +9,7 @@ from django.dispatch import receiver
 from inbound_email.signals import email_received, email_received_unacceptable
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.contrib.auth.models import User
-from .models import Email, Volume
+from .models import Email, Volume, Highlight, Entry
 from bs4 import BeautifulSoup
 
 __BASEURL = 'https://www.googleapis.com/books/v1'
@@ -54,32 +54,32 @@ def find_or_create_user(email):
         user = User.objects.create_user(username=email)
     return user
 
-def find_or_create_highlights(user, volume, content):
-    # TODO: Check if there already are highlights for this user and this volume
-    # ignore if so.
-    # If there are no highlights for this user/volume, create new highlights
-    return parse_highlights(content)
+def create_entry(user, volume, content):
+    # Attempt to retrieve highlights for this user/volume pair
+    entry = Entry.objects.filter(user__id=user.id).filter(volume__id=volume.id)
+    # If there are no highlights for this user/volume pair, process the content
+    if not entry:
+        entry = Entry(user=user, volume=volume)
+        entry.save()
 
-def parse_highlights(content):
-    parsed_content = BeautifulSoup(content, "html.parser")
-    title = parsed_content.find_all(attrs={"class": "bookTitle"})[0].string.strip()
+        parsed_content = BeautifulSoup(content, "html.parser")
+        title = parsed_content.find_all(attrs={"class": "bookTitle"})[0].string.strip()
 
-    highlights = []
-    headings = parsed_content.find_all('div', 'noteHeading')
+        highlights = []
+        headings = parsed_content.find_all('div', 'noteHeading')
 
-    for heading in headings:
-        span = heading.find('span')
-        color = heading.find('span').string if span != None else 'blue'
+        for heading in headings:
+            span = heading.find('span')
+            color = heading.find('span').string if span != None else 'blue'
 
-        location = re.findall("location\s(\d*)", str(heading), re.I)
-        if len(location) > 0:
-            location = location[0]
+            location = re.findall("location\s(\d*)", str(heading), re.I)
+            if len(location) > 0:
+                location = location[0]
 
-        content = heading.next_sibling.next_sibling.string.strip()
-        type = 'note' if re.search('Note\s-', str(heading)) else 'highlight'
-        highlights.append({'color': color, 'location': location, 'type': type, 'content': content})
-
-    return highlights
+            content = heading.next_sibling.next_sibling.string.strip()
+            highlight_type = 'note' if re.search('Note\s-', str(heading)) else 'highlight'
+            highlight = Highlight(user=user, volume=volume, entry=entry, color=color, location=location, highlight_type=highlight_type, content=content)
+            highlight.save()
 
 def find_or_create_volume(content):
     parsed_content = BeautifulSoup(content, "html.parser")
@@ -152,7 +152,7 @@ def on_email_received(sender, **kwargs):
     volume = find_or_create_volume(new_email.attachment)
 
     # Parse the HTML to retrieve color, location, content for each highlight
-    highlights = find_or_create_highlights(user, volume, new_email.attachment)
+    create_entry(user, volume, new_email.attachment)
 
 
 @receiver(email_received_unacceptable, dispatch_uid="something_unique_1")

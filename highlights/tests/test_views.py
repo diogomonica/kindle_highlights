@@ -6,7 +6,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.core.mail import EmailMultiAlternatives
 from .test_files.mailgun_post import spirit_animals_payload as mailgun_payload
-from highlights.models import Email, Volume
+from highlights.models import Email, Volume, Highlight, Entry
 from django.utils.encoding import smart_bytes
 
 # from unittest import mockfrom contextlib import contextmanager
@@ -113,6 +113,14 @@ class EmailTest(TestCase):
             # Check to see if a Volume was created
             volumes = Volume.objects.all()
             self.assertEqual(volumes.count(), 1)
+
+            # Check to see if Highlights were created
+            highlights = Highlight.objects.all()
+            self.assertEqual(highlights.count(), 8)
+
+            # Check to see if Highlights were created
+            entries = Entry.objects.all()
+            self.assertEqual(entries.count(), 1)
 
     # def test_email_with_two_attachment_gets_created(self):
     # def test_email_with_wrong_content_type(self):
