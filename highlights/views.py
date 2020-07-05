@@ -4,6 +4,7 @@ import json
 import re
 
 from django.http import HttpResponse
+from django.core.exceptions import SuspiciousOperation
 from django.shortcuts import render
 from django.dispatch import receiver
 from inbound_email.signals import email_received, email_received_unacceptable
@@ -11,6 +12,7 @@ from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.contrib.auth.models import User
 from .models import Email, Volume, Highlight, Entry
 from bs4 import BeautifulSoup
+
 
 __BASEURL = 'https://www.googleapis.com/books/v1'
 
@@ -83,7 +85,10 @@ def create_entry(user, volume, content):
 
 def find_or_create_volume(content):
     parsed_content = BeautifulSoup(content, "html.parser")
-    book_title = parsed_content.find_all(attrs={"class": "bookTitle"})[0].string.strip()
+    book_title_attrs = parsed_content.find_all(attrs={"class": "bookTitle"})
+    if len(book_title_attrs) == 0:
+        raise SuspiciousOperation('No book title found on attached highlights')
+    book_title = book_title_attrs[0].string.strip()
 
     logging.info("Attemping to find a book with title: %s" % book_title)
     google_books_reply = find_from_google_books(book_title)
@@ -97,12 +102,12 @@ def find_or_create_volume(content):
         except Volume.DoesNotExist:
             params = dict()
             params['google_id'] = google_id
-            params['title'] = google_books_reply['items'][0]['volumeInfo']['title']
-            params['subtitle'] = google_books_reply['items'][0]['volumeInfo']['subtitle']
-            params['description'] = google_books_reply['items'][0]['volumeInfo']['description']
-            params['published_date'] = google_books_reply['items'][0]['volumeInfo']['publishedDate']
-            params['publisher'] = google_books_reply['items'][0]['volumeInfo']['publisher']
-            params['page_count'] = google_books_reply['items'][0]['volumeInfo']['pageCount']
+            params['title'] = google_books_reply['items'][0]['volumeInfo'].get('title',"")
+            params['subtitle'] = google_books_reply['items'][0]['volumeInfo'].get('subtitle',"")
+            params['description'] = google_books_reply['items'][0]['volumeInfo'].get('description',"")
+            params['published_date'] = google_books_reply['items'][0]['volumeInfo'].get('publishedDate')
+            params['publisher'] = google_books_reply['items'][0]['volumeInfo'].get('publisher',"Unkown Publisher")
+            params['page_count'] = google_books_reply['items'][0]['volumeInfo'].get('pageCount',"0")
 
             volume = Volume.objects.create(**params)
             logging.info("Created new volume with ID: %s" % google_id)
@@ -115,7 +120,6 @@ def find_from_google_books(book_title):
     params['q'] = "intitle:"+book_title
     params['maxResults'] = 1
     google_books_reply = _get(path,params)
-    logging.debug("Volumes found: %s", google_books_reply)
     return google_books_reply
 
 @receiver(email_received, dispatch_uid="something_unique")
@@ -123,6 +127,10 @@ def on_email_received(sender, **kwargs):
     """Handle inbound emails."""
     email = kwargs.pop('email')
     request = kwargs.pop('request')
+
+    logging.debug("Parsing new email: %s with %s attachments." % (email.subject, len(email.attachments)))
+    if len(email.attachments) == 0:
+        raise SuspiciousOperation('Email has no attached highlights')
 
     # Save the entry in the database and store it for future parsing
     new_email = Email(sender_email=email.from_email, subject=email.subject, body=email.body)
