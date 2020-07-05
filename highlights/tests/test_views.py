@@ -122,5 +122,41 @@ class EmailTest(TestCase):
             entries = Entry.objects.all()
             self.assertEqual(entries.count(), 1)
 
+    def test_two_emails_with_attachment(self):
+            data = mailgun_payload
+            file_path = path.join(path.dirname(__file__), 'test_files/animal_spirits.html')
+            attachment_1 = open(file_path, 'r').read()
+            data['attachment-1'] = open(file_path, 'r')
+
+            response = self.client.post(reverse('receive_inbound_email'), data)
+
+            # Check that the response is 200 OK.
+            self.assertEqual(response.status_code, 200)
+
+            # Check to see if an email was indeed created
+            emails = Email.objects.all()
+
+            self.assertEqual(emails.count(), 1)
+            self.assertEqual(emails.first().subject, mailgun_payload.get('subject'))
+            self.assertEqual(emails.first().body, "%s\n\n%s" % (
+                mailgun_payload.get('stripped-text', ''),
+                mailgun_payload.get('stripped-signature', '')
+            ))
+            self.assertEqual(emails.first().sender_email, mailgun_payload.get('sender'))
+            self.assertEqual(smart_bytes(emails.first().attachment), smart_bytes(attachment_1))
+
+            # Check to see if a Volume was created
+            volumes = Volume.objects.all()
+            self.assertEqual(volumes.count(), 1)
+
+            # Check to see if Highlights were created
+            highlights = Highlight.objects.all()
+            self.assertEqual(highlights.count(), 8)
+
+            # Check to see if Highlights were created
+            entries = Entry.objects.all()
+            self.assertEqual(entries.count(), 1)
+
+
     # def test_email_with_two_attachment_gets_created(self):
     # def test_email_with_wrong_content_type(self):
