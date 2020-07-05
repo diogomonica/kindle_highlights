@@ -1,0 +1,30 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>Kinly</title>
+    <meta name="description" content="A collection of highlights and notes from books and articles." />
+  
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'highlights/style.css' %}">
+    <link rel="SHORTCUT ICON" href="/favicon.png" />
+</head>
+<body>
+  <div id="root">
+<main class="l-container l-container--shelf u-margin-top--xl">
+<h1 class="u-antialiased">What I’ve been reading</h1>
+<ul class="c-shelf">
+<li class="c-shelf__volume">
+<a href="/volumes/EFzXxtEyP1TZ5rpeiqoY" class="c-shelf__link">
+<figure class="c-cover">
+<img srcSet="https://sawyer-highlights.imgix.net/volume/covers/antiracist.jpg?w=250&amp;h=400&amp;fit=crop&amp;q=50&amp;auto=format&amp;dpr=1 1x, https://sawyer-highlights.imgix.net/volume/covers/antiracist.jpg?w=250&amp;h=400&amp;fit=crop&amp;q=50&amp;auto=format&amp;dpr=2 2x" src="https://sawyer-highlights.imgix.net/volume/covers/antiracist.jpg?w=250&amp;h=400&amp;fit=crop&amp;q=50&amp;auto=format" alt="How to Be an Antiracist"/></figure>
+<h2 class="c-shelf__volume__title">How to Be an Antiracist</h2>
+</a>
+{% for entry in entry_list %}
+    {{ entry }}
+{% endfor %}
+</li>
+</main>

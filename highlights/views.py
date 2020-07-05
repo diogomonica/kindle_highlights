@@ -169,5 +169,8 @@ def on_invalid_email_received(sender, **kwargs):
     logging.warning(message)
 
 def index(request):
-    return HttpResponse("INDEX VIEW")
+    entries = Entry.objects.order_by('-created_at')[:10]
+    context = {'entries_list': entries}
+
+    return render(request, 'highlights/index.html', context)
 
