@@ -61,4 +61,4 @@ class Highlight(models.Model):
         verbose_name_plural = 'highlights'
 
     def __str__(self):
-        return u"%s - %s" % (self.location, self.title + " - " + self.subtitle)
+        return u"%s - %s" % (self.location, self.content)

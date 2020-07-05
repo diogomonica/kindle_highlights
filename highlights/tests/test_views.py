@@ -23,18 +23,20 @@ from django.utils.encoding import smart_bytes
 #     signal.disconnect(handler)
 
 class IndexTest(TestCase):
+    fixtures = ["emails.json", "entries.json", "highlights.json", "users.json", "volumes.json"]
+
     def setUp(self):
         # Every test needs a client.
         self.client = Client()
 
-    def test_details(self):
+    def test_entries(self):
         # Issue a GET request.
         response = self.client.get('/')
 
         # Check that the response is 200 OK.
         self.assertEqual(response.status_code, 200)
-
-        # Check that the rendered context contains 5 customers.
+        logging.debug("ENTRIES: %s " % response.context['entries_list'])
+        self.assertEqual(len(response.context['entries_list']), 5)
         # self.assertEqual(response.content ,b'INDEX VIEW')
 
 class EmailTest(TestCase):

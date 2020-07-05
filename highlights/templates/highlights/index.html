@@ -17,14 +17,14 @@
 <main class="l-container l-container--shelf u-margin-top--xl">
 <h1 class="u-antialiased">What I’ve been reading</h1>
 <ul class="c-shelf">
-<li class="c-shelf__volume">
-<a href="/volumes/EFzXxtEyP1TZ5rpeiqoY" class="c-shelf__link">
-<figure class="c-cover">
-<img srcSet="https://sawyer-highlights.imgix.net/volume/covers/antiracist.jpg?w=250&amp;h=400&amp;fit=crop&amp;q=50&amp;auto=format&amp;dpr=1 1x, https://sawyer-highlights.imgix.net/volume/covers/antiracist.jpg?w=250&amp;h=400&amp;fit=crop&amp;q=50&amp;auto=format&amp;dpr=2 2x" src="https://sawyer-highlights.imgix.net/volume/covers/antiracist.jpg?w=250&amp;h=400&amp;fit=crop&amp;q=50&amp;auto=format" alt="How to Be an Antiracist"/></figure>
-<h2 class="c-shelf__volume__title">How to Be an Antiracist</h2>
-</a>
-{% for entry in entry_list %}
-    {{ entry }}
+{% for entry in entries %}
+  <li class="c-shelf__volume">
+  <a href="/volumes/EFzXxtEyP1TZ5rpeiqoY" class="c-shelf__link">
+  <figure class="c-cover">
+  <img srcSet="https://books.google.com/books?id={{entry.volume.google_id}}&printsec=frontcover&img=1&zoom=2&edge=curl&source=gbs_api 1x, https://books.google.com/books?id={{entry.volume.google_id}}&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api 2x" src="https://books.google.com/books?id={{entry.volume.google_id}}&printsec=frontcover&img=1&zoom=4&edge=curl&source=gbs_api" alt="{{entry.volume.title}}"/></figure>
+  <h2 class="c-shelf__volume__title">{{ entry.volume.title}}</h2>
+  </a>
+  </li>
 {% endfor %}
-</li>
+</ul>
 </main>
