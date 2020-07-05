@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{entry.volume.title}}</title>
+      <meta name="description" content="{{entry.volume.description}}" />
+    
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'highlights/style.css' %}">
+    <link rel="SHORTCUT ICON" href="/favicon.png" />
+</head>
+<body>
+  <div id="root">
+<nav class="c-nav">
+<a href="/">← Browse all reads</a>
+</nav>
+<main class="l-container l-container--highlights">
+<header class="c-volume-header">
+<figure class="c-cover">
+<img srcSet="https://books.google.com/books?id={{entry.volume.google_id}}&printsec=frontcover&img=1&zoom=2&edge=curl&source=gbs_api 1x, https://books.google.com/books?id={{entry.volume.google_id}}&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api 2x" src="https://books.google.com/books?id={{entry.volume.google_id}}&printsec=frontcover&img=1&zoom=4&edge=curl&source=gbs_api" alt="{{entry.volume.title}}"/></figure>
+<h1 class="u-antialiased">{{entry.volume.title}}</h1>
+<p class="c-volume-header__authors u-family-mono">{{entry.volume.authors}}</p></header>
+{% for highlight in highlights %}
+    <article class="c-highlight">
+        <blockquote class="c-highlight__body">
+            <p><span>{{highlight.content}}</span></p>
+        </blockquote>
+        <div class="c-highlight__nav u-family-mono"><a href="/highlights/KTdpsyx29PxakG9Y46sZ">Link</a> · {{highlight.location}}</div>
+    </article>
+{% endfor %}
+</main>

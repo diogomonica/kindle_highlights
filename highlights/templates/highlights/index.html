@@ -19,7 +19,7 @@
 <ul class="c-shelf">
 {% for entry in entries %}
   <li class="c-shelf__volume">
-  <a href="/volumes/EFzXxtEyP1TZ5rpeiqoY" class="c-shelf__link">
+  <a href="{% url 'entry' entry.id %}" class="c-shelf__link">
   <figure class="c-cover">
   <img srcSet="https://books.google.com/books?id={{entry.volume.google_id}}&printsec=frontcover&img=1&zoom=2&edge=curl&source=gbs_api 1x, https://books.google.com/books?id={{entry.volume.google_id}}&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api 2x" src="https://books.google.com/books?id={{entry.volume.google_id}}&printsec=frontcover&img=1&zoom=4&edge=curl&source=gbs_api" alt="{{entry.volume.title}}"/></figure>
   <h2 class="c-shelf__volume__title">{{ entry.volume.title}}</h2>

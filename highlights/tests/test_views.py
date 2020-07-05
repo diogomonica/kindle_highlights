@@ -28,6 +28,22 @@ class IndexTest(TestCase):
         self.assertEqual(len(response.context['entries']), 5)
         # self.assertEqual(response.content ,b'INDEX VIEW')
 
+class EntryTest(TestCase):
+    fixtures = ["emails.json", "entries.json", "highlights.json", "users.json", "volumes.json"]
+
+    def setUp(self):
+        # Every test needs a client.
+        self.client = Client()
+
+    def test_entry(self):
+        # Issue a GET request.
+        response = self.client.get('/e/1/')
+
+        # Check that the response is 200 OK.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['highlights']), 5)
+        self.assertEqual(response.context['entry'].id, 1)
+
 class EmailTest(TestCase):
     def setUp(self):
         # Every test needs a client.

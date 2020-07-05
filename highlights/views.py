@@ -5,7 +5,7 @@ import re
 
 from django.http import HttpResponse
 from django.core.exceptions import SuspiciousOperation
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.dispatch import receiver
 from inbound_email.signals import email_received, email_received_unacceptable
 from django.core.mail import EmailMessage, EmailMultiAlternatives
@@ -189,3 +189,9 @@ def index(request):
 
     return render(request, 'highlights/index.html', context)
 
+def entry(request, entry_id):
+    entry = get_object_or_404(Entry, pk=entry_id)
+    highlights = Highlight.objects.filter(entry=entry)
+    context = {'entry': entry, 'highlights': highlights}
+
+    return render(request, 'highlights/entry.html', context)
