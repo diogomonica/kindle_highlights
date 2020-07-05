@@ -85,13 +85,17 @@ def create_entry(user, volume, content):
 
 def find_or_create_volume(content):
     parsed_content = BeautifulSoup(content, "html.parser")
+    book_title, book_authors = (None, None)
     book_title_attrs = parsed_content.find_all(attrs={"class": "bookTitle"})
     if len(book_title_attrs) == 0:
         raise SuspiciousOperation('No book title found on attached highlights')
     book_title = book_title_attrs[0].string.strip()
+    book_authors_attr = parsed_content.find_all(attrs={"class": "authors"})
+    if len(book_authors_attr) > 0:
+        book_authors = book_authors_attr[0].string.strip()
 
-    logging.info("Attemping to find a book with title: %s" % book_title)
-    google_books_reply = find_from_google_books(book_title)
+    logging.info("Attemping to find a book with title: %s and authors: %s" % (book_title, book_authors))
+    google_books_reply = find_from_google_books(book_title, book_authors)
 
     total_items = google_books_reply['totalItems']
     if total_items != None and int(total_items) > 0:
@@ -114,10 +118,13 @@ def find_or_create_volume(content):
 
     return volume
 
-def find_from_google_books(book_title):
+def find_from_google_books(book_title, authors):
     path = '/volumes'
     params = dict()
-    params['q'] = "intitle:"+book_title
+    params['q'] = "intitle:" + book_title
+    if authors:
+        params['q'] = params['q'] + " inauthor:" + authors
+
     params['maxResults'] = 1
     google_books_reply = _get(path,params)
     return google_books_reply

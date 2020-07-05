@@ -12,16 +12,6 @@ from django.contrib.auth.models import User
 
 from django.utils.encoding import smart_bytes
 
-# from unittest import mockfrom contextlib import contextmanager
-
-# Create your tests here.
-# @contextmanagerdef catch_signal(signal):
-#     """Catch django signal and return the mocked call."""
-#     handler = mock.Mock()
-#     signal.connect(handler)
-#     yield handler
-#     signal.disconnect(handler)
-
 class IndexTest(TestCase):
     fixtures = ["emails.json", "entries.json", "highlights.json", "users.json", "volumes.json"]
 
@@ -35,8 +25,7 @@ class IndexTest(TestCase):
 
         # Check that the response is 200 OK.
         self.assertEqual(response.status_code, 200)
-        logging.debug("ENTRIES: %s " % response.context['entries_list'])
-        self.assertEqual(len(response.context['entries_list']), 5)
+        self.assertEqual(len(response.context['entries']), 5)
         # self.assertEqual(response.content ,b'INDEX VIEW')
 
 class EmailTest(TestCase):
