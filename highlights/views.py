@@ -12,7 +12,7 @@ from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.contrib.auth.models import User
 from .models import Email, Volume, Highlight, Entry
 from bs4 import BeautifulSoup
-
+from datetime import datetime
 
 __BASEURL = 'https://www.googleapis.com/books/v1'
 
@@ -46,6 +46,16 @@ def to_dict(email_message):
     if isinstance(email_message, EmailMultiAlternatives):
         email_message_data['alternatives'] = email_message.alternatives
     return email_message_data 
+
+def try_strptime(s, fmts=['%Y-%m-%d','%Y-%m','%Y']):
+    for fmt in fmts:
+        try:
+            logging.warning("Trying: %s with %s" % (s, fmt))
+            return datetime.strptime(s, fmt).strftime('%Y-%m-%d')
+        except:
+            continue
+    
+    return None # or reraise the ValueError if no format matched, if you prefer
 
 def find_or_create_user(email):
     try:
@@ -109,10 +119,12 @@ def find_or_create_volume(content):
             params['title'] = google_books_reply['items'][0]['volumeInfo'].get('title',"")
             params['subtitle'] = google_books_reply['items'][0]['volumeInfo'].get('subtitle',"")
             params['description'] = google_books_reply['items'][0]['volumeInfo'].get('description',"")
-            params['published_date'] = google_books_reply['items'][0]['volumeInfo'].get('publishedDate')
             params['publisher'] = google_books_reply['items'][0]['volumeInfo'].get('publisher',"Unkown Publisher")
             params['page_count'] = google_books_reply['items'][0]['volumeInfo'].get('pageCount',"0")
+            # Published date might not confirm to the right format. Sometimes the google api only returns the year.
+            params['published_date']= try_strptime(google_books_reply['items'][0]['volumeInfo'].get('publishedDate'))
 
+            logging.warning(params)
             volume = Volume.objects.create(**params)
             logging.info("Created new volume with ID: %s" % google_id)
 

@@ -23,7 +23,7 @@ class Volume(models.Model):
     title = models.CharField(max_length=255)
     subtitle = models.CharField(max_length=255)
     description = models.TextField()
-    published_date = models.DateField()
+    published_date = models.DateField(blank=True, null=True)
     publisher = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now=True)
     page_count = models.IntegerField()
