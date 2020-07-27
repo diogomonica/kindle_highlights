@@ -106,6 +106,41 @@ class EmailTest(TestCase):
         entries = Entry.objects.all()
         self.assertEqual(entries.count(), 1)
 
+    def test_email_with_attachment_whose_book_has_only_published_year_gets_created(self):
+        data = copy.deepcopy(mailgun_payload)
+        file_path = path.join(path.dirname(__file__), 'test_files/publicly_shamed.html')
+        attachment_1 = open(file_path, 'r').read()
+        data['attachment-1'] = open(file_path, 'r')
+
+        response = self.client.post(reverse('receive_inbound_email'), data)
+
+        # Check that the response is 200 OK.
+        self.assertEqual(response.status_code, 200)
+
+        # Check to see if an email was indeed created
+        emails = Email.objects.all()
+
+        self.assertEqual(emails.count(), 1)
+        self.assertEqual(emails.first().subject, data.get('subject'))
+        self.assertEqual(emails.first().body, "%s\n\n%s" % (
+            data.get('stripped-text', ''),
+            data.get('stripped-signature', '')
+        ))
+        self.assertEqual(emails.first().sender_email, data.get('sender'))
+        self.assertEqual(smart_bytes(emails.first().attachment), smart_bytes(attachment_1))
+
+        # Check to see if a Volume was created
+        volumes = Volume.objects.all()
+        self.assertEqual(volumes.count(), 1)
+
+        # Check to see if Highlights were created
+        highlights = Highlight.objects.all()
+        self.assertEqual(highlights.count(), 21)
+
+        # Check to see if Highlights were created
+        entries = Entry.objects.all()
+        self.assertEqual(entries.count(), 1)
+
     def test_email_with_no_attachment_fails(self):
         data = copy.deepcopy(mailgun_payload)
         del data['attachment-count']
