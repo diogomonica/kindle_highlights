@@ -118,12 +118,12 @@ def find_or_create_volume(content):
             params['google_id'] = google_id
             params['title'] = google_books_reply['items'][0]['volumeInfo'].get('title',"")
             params['subtitle'] = google_books_reply['items'][0]['volumeInfo'].get('subtitle',"")
+            params['authors'] = ', '.join(google_books_reply['items'][0]['volumeInfo'].get('authors',""))
             params['description'] = google_books_reply['items'][0]['volumeInfo'].get('description',"")
             params['publisher'] = google_books_reply['items'][0]['volumeInfo'].get('publisher',"Unkown Publisher")
             params['page_count'] = google_books_reply['items'][0]['volumeInfo'].get('pageCount',"0")
             # Published date might not confirm to the right format. Sometimes the google api only returns the year.
             params['published_date']= try_strptime(google_books_reply['items'][0]['volumeInfo'].get('publishedDate'))
-
             logging.warning(params)
             volume = Volume.objects.create(**params)
             logging.info("Created new volume with ID: %s" % google_id)
@@ -207,3 +207,9 @@ def entry(request, entry_id):
     context = {'entry': entry, 'highlights': highlights}
 
     return render(request, 'highlights/entry.html', context)
+
+def highlight(request, highlight_id):
+    highlight = get_object_or_404(Highlight, pk=highlight_id)
+    context = {'highlight': highlight}
+
+    return render(request, 'highlights/highlight.html', context)

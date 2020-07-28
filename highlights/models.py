@@ -27,6 +27,7 @@ class Volume(models.Model):
     publisher = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now=True)
     page_count = models.IntegerField()
+    authors = models.TextField(default="")
 
     class Meta:
         verbose_name_plural = 'volumes'

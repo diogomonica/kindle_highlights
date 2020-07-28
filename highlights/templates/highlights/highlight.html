@@ -1,0 +1,34 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>{{highlight.volume.title}}</title>
+    <meta name="description" content="{{highlight.volume.description}}" />
+  
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'highlights/style.css' %}">
+    <link rel="SHORTCUT ICON" href="/favicon.png" />
+</head>
+<body>
+  <div id="root">
+    <nav class="c-nav">
+        <a href="/">← Browse all reads</a>
+    </nav>
+    <main class="l-container l-container--highlights">
+    <header class="c-volume-header c-volume-header--small">
+    <figure class="c-cover">
+        <img srcSet="https://books.google.com/books/content?id={{highlight.volume.google_id}}&printsec=frontcover&img=1&zoom=2&edge=curl&source=gbs_api 1x, https://books.google.com/books?id={{highlight.volume.google_id}}&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api 2x" src="https://books.google.com/books?id={{highlight.volume.google_id}}&printsec=frontcover&img=1&zoom=4&edge=curl&source=gbs_api" alt="{{highlight.volume.title}}"/></figure>
+        <h1 class="u-antialiased">{{highlight.volume.title}}</h1>
+        <h2 class="u-antialiased">{{highlight.volume.subtitle}}</h2>
+        <p class="c-volume-header__authors u-family-mono">{{highlight.volume.author}}</p>
+    </header>
+    <article class="c-highlight"><blockquote class="c-highlight__body"><p><span>{{highlight.content}}</span></p></blockquote>
+        <div class="c-highlight__nav u-family-mono">
+    </article>
+    <div class="u-align--center">
+      <a href="{% url 'entry' highlight.entry.id %}" class="c-button u-margin-bottom--xl">Browse more highlights</a>
+    </div>
+  </main>

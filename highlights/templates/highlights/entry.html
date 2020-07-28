@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{entry.volume.title}}</title>
-      <meta name="description" content="{{entry.volume.description}}" />
-    
+    <meta name="description" content="{{entry.volume.description}}" />
+
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'highlights/style.css' %}">
     <link rel="SHORTCUT ICON" href="/favicon.png" />
@@ -27,7 +27,7 @@
         <blockquote class="c-highlight__body">
             <p><span>{{highlight.content}}</span></p>
         </blockquote>
-        <div class="c-highlight__nav u-family-mono"><a href="/highlights/KTdpsyx29PxakG9Y46sZ">Link</a> · {{highlight.location}}</div>
+        <div class="c-highlight__nav u-family-mono"><a href="{% url 'highlight' highlight.id %}">Link</a> · {{highlight.location}}</div>
     </article>
 {% endfor %}
 </main>
