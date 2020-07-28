@@ -24,6 +24,9 @@ name = client.secret_version_path("329268971458", "django-secret-key", 1)
 response = client.access_secret_version(name)
 django_secret_key = response.payload.data.decode('UTF-8')
 
+name = client.secret_version_path("329268971458", "google-books-api", 1)
+response = client.access_secret_version(name)
+os.putenv("GOOGLE_BOOKS_API",response.payload.data.decode('UTF-8'))
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

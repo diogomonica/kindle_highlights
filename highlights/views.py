@@ -1,7 +1,4 @@
-import logging
-import requests
-import json
-import re
+import re, os, json, requests, logging
 
 from django.http import HttpResponse
 from django.core.exceptions import SuspiciousOperation
@@ -13,13 +10,17 @@ from django.contrib.auth.models import User
 from .models import Email, Volume, Highlight, Entry
 from bs4 import BeautifulSoup
 from datetime import datetime
+from google.cloud import secretmanager
 
 __BASEURL = 'https://www.googleapis.com/books/v1'
+
+
+# Access the database secret and django secret in google secrets manager.
 
 def _get(path, params=None):
     if params is None:
         params = {}
-    params["key"] = "AIzaSyBKgWOv1eA0w73f-VQm0D-deUptP4dvCh4"
+    params["key"] = os.getenv('GOOGLE_BOOKS_API', None),
     resp = requests.get(__BASEURL+path, params=params)
     if resp.status_code == 200:
         return json.loads(resp.content)
@@ -196,7 +197,7 @@ def on_invalid_email_received(sender, **kwargs):
     logging.warning(message)
 
 def index(request):
-    entries = Entry.objects.order_by('-created_at')[:50]
+    entries = Entry.objects.order_by('-created_at')[:25]
     context = {'entries': entries}
 
     return render(request, 'highlights/index.html', context)
@@ -213,3 +214,10 @@ def highlight(request, highlight_id):
     context = {'highlight': highlight}
 
     return render(request, 'highlights/highlight.html', context)
+
+def user_page(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    entries = Entry.objects.filter(user=user).order_by('-created_at')[:25]
+    context = {'entries': entries}
+
+    return render(request, 'highlights/user_page.html', context)
