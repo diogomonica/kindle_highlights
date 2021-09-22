@@ -1,4 +1,4 @@
-Django==3.0.7
+Django==3.1.13
 PyMySQL==0.9.3
 google-cloud-secret-manager
 django-inbound-email
